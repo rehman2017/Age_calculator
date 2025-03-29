@@ -1,23 +1,22 @@
+import datetime
 import streamlit as st
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 def calculate_age(birthdate):
-    current_date = datetime.today()
+    current_date = datetime.date.today()
+    
+    # Ensure birthdate is a date object
+    if isinstance(birthdate, str):
+        try:
+            birthdate = datetime.datetime.strptime(birthdate, "%Y-%m-%d").date()
+        except ValueError:
+            return "Invalid date format. Please use YYYY-MM-DD."
     
     if birthdate > current_date:
-        return "Invalid input! Birthdate cannot be in the future."
+        return "Error: Birthdate cannot be in the future."
     
-    age = relativedelta(current_date, birthdate).years
-    years_to_100 = 100 - age
+    age = current_date.year - birthdate.year - ((current_date.month, current_date.day) < (birthdate.month, birthdate.day))
     
-    message = f"You are {age} years old. 🎉\n"
-    if years_to_100 > 0:
-        message += f"You will turn 100 in {years_to_100} years."
-    else:
-        message += "You have already turned 100 or more!"
-    
-    return message
+    return f"Your age is {age} years."
 
 def set_background():
     st.markdown(
@@ -31,6 +30,7 @@ def set_background():
         unsafe_allow_html=True
     )
 
+# Streamlit UI
 # Set background color
 set_background()
 
